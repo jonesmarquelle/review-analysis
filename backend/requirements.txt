@@ -3,14 +3,12 @@ fastapi
 uvicorn
 python-dotenv
 termcolor
-googlemaps-scraper
 pathlib
 lxml
 selenium
 webdriver-manager
 notebook
 pandas
-mongodb
 pymongo
 requests
 beautifulsoup4

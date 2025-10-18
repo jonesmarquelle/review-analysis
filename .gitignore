@@ -113,3 +113,8 @@ test/
 !urls.txt
 !urls_places.txt
 chromedriver*
+
+# data
+backend/input/
+backend/output/
+backend/data/

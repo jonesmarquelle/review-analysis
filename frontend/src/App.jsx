@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import './App.css';
+import React from 'react';
 
 function App() {
   const [url, setUrl] = useState('');
@@ -35,6 +36,9 @@ function App() {
     <div className="App">
       <header className="App-header">
         <h1>Google Maps Reviews Analyzer</h1>
+        <p>
+            This tool scrapes Google Maps reviews for a given URL, filters them for complaints, and performs an analysis to identify common issues.
+        </p>
         <div className="input-container">
           <input
             type="text"
@@ -49,7 +53,7 @@ function App() {
               type="range"
               id="reviews-count"
               min="0"
-              max="100"
+              max="1000"
               value={reviewsCount}
               onChange={(e) => setReviewsCount(e.target.value)}
               className="slider"
