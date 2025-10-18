@@ -1,39 +1,47 @@
+from fastapi import FastAPI
+from pydantic import BaseModel
 import os
 
-def main():
-    print("Starting scraper...")
-    scrape_result = os.system("python3 scraper.py --o reviews.csv --sort_by lowest_rating --N 50 --source")
-    if scrape_result != 0:
-        print(f"Error: scraper.py failed with exit code {scrape_result}")
-        return
-    print("Scraper successfully completed")
-    print("Reviews saved to data/reviews.csv")
-    
-    print("Starting CSV to JSON...")
-    convert_result = os.system("python3 csv_to_json.py data/reviews.csv data/reviews.json")
-    if convert_result != 0:
-        print(f"Error: csv_to_json.py failed with exit code {convert_result}")
-        return
-    print("CSV to JSON successfully completed")
-    print("Reviews saved to data/reviews.json")
+from scraper import scrape_reviews
+from csv_to_json import csv_to_json
+from preprocess_reviews import preprocess_reviews
+from analyze_complaints import analyze_complaints
 
-    print("Starting Preprocess reviews...")
-    preprocess_result = os.system("python3 preprocess_reviews.py data/reviews.json sample_filter_terms.txt data/filtered_reviews.json")
-    if preprocess_result != 0:
-        print(f"Error: preprocess_reviews.py failed with exit code {preprocess_result}")
-        return
-    print("Preprocess reviews successfully completed")
-    print("Filtered reviews saved to data/filtered_reviews.json")
+app = FastAPI()
 
-    print("Starting Analyze complaints...")
-    analyze_result = os.system("python3 analyze_complaints.py --input data/filtered_reviews.json --output data/complaints_analysis.md")
-    if analyze_result != 0:
-        print(f"Error: analyze_complaints.py failed with exit code {analyze_result}")
-        return
-    print("Analyze complaints successfully completed")
-    print("Complaints analysis saved to data/complaints_analysis.md")
+class AnalysisRequest(BaseModel):
+    url: str
+    reviews_count: int
 
-    print("All tasks successfully completed")
+@app.post("/analyze")
+def analyze(request: AnalysisRequest):
+    urls = [request.url]
+    reviews_count = request.reviews_count
 
-if __name__ == "__main__":
-    main()
+    # Define file paths
+    reviews_csv = "data/reviews.csv"
+    reviews_json = "data/reviews.json"
+    filtered_reviews_json = "data/filtered_reviews.json"
+    complaints_analysis_md = "data/complaints_analysis.md"
+    sample_filter_terms = "sample_filter_terms.txt"
+
+    # Create data directory if it doesn't exist
+    os.makedirs("data", exist_ok=True)
+
+    # 1. Scrape reviews
+    scraped_csv = scrape_reviews(urls, reviews_count, outpath=reviews_csv, source=True)
+
+    # 2. Convert CSV to JSON
+    converted_json = csv_to_json(scraped_csv, reviews_json)
+
+    # 3. Preprocess reviews
+    preprocessed_json = preprocess_reviews(converted_json, sample_filter_terms, filtered_reviews_json)
+
+    # 4. Analyze complaints
+    analysis_result = analyze_complaints(preprocessed_json, complaints_analysis_md)
+
+    return {"analysis": analysis_result}
+
+@app.get("/")
+def read_root():
+    return {"message": "Google Maps Scraper API"}
