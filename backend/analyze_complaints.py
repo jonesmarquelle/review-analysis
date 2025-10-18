@@ -116,6 +116,40 @@ def save_analysis(analysis_text, output_file):
         print(f"Error saving analysis: {e}")
 
 
+def analyze_complaints(input_file, output_file, api_key=None, min_rating=1):
+    # Load reviews
+    reviews = load_reviews(input_file)
+    
+    # Filter reviews with text content
+    reviews_with_text = filter_reviews_with_text(reviews)
+    
+    if not reviews_with_text:
+        print("No reviews with text content found. Exiting.")
+        sys.exit(1)
+    
+    # Filter by minimum rating if specified
+    if min_rating > 1:
+        reviews_with_text = [r for r in reviews_with_text if r.get('rating', 0) <= min_rating]
+        print(f"Filtered to {len(reviews_with_text)} reviews with rating <= {min_rating}")
+    
+    # Create analysis prompt
+    prompt = create_analysis_prompt(reviews_with_text)
+    
+    # Analyze with Gemini
+    analysis = analyze_with_gemini(prompt, api_key)
+    
+    if analysis:
+        print("GEMINI ANALYSIS RESULTS")
+        print(analysis)
+        
+        # Save analysis
+        save_analysis(analysis, output_file)
+        return analysis
+    else:
+        print("Failed to get analysis from Gemini")
+        sys.exit(1)
+
+
 def main():
     parser = argparse.ArgumentParser(description='Analyze Google Maps reviews for common complaints using Gemini AI')
     parser.add_argument('--input', '-i', type=str, default='data/reviews.json', 
@@ -129,39 +163,7 @@ def main():
     
     args = parser.parse_args()
     
-    # Load reviews
-    reviews = load_reviews(args.input)
-    
-    # Filter reviews with text content
-    reviews_with_text = filter_reviews_with_text(reviews)
-    
-    if not reviews_with_text:
-        print("No reviews with text content found. Exiting.")
-        sys.exit(1)
-    
-    # Filter by minimum rating if specified
-    if args.min_rating > 1:
-        reviews_with_text = [r for r in reviews_with_text if r.get('rating', 0) <= args.min_rating]
-        print(f"Filtered to {len(reviews_with_text)} reviews with rating <= {args.min_rating}")
-    
-    # Create analysis prompt
-    prompt = create_analysis_prompt(reviews_with_text)
-    
-    # Analyze with Gemini
-    analysis = analyze_with_gemini(prompt, args.api_key)
-    
-    if analysis:
-        print("\n" + "="*80)
-        print("GEMINI ANALYSIS RESULTS")
-        print("="*80)
-        print(analysis)
-        print("="*80)
-        
-        # Save analysis
-        save_analysis(analysis, args.output)
-    else:
-        print("Failed to get analysis from Gemini")
-        sys.exit(1)
+    analyze_complaints(args.input, args.output, args.api_key, args.min_rating)
 
 
 if __name__ == '__main__':

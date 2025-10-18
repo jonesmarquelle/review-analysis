@@ -24,6 +24,34 @@ def csv_writer(source_field, ind_sort_by, outpath):
     return writer
 
 
+def scrape_reviews(urls, n, outpath='output.csv', sort_by='lowest_rating', place=False, debug=False, source=False):
+    writer = csv_writer(source, sort_by, outpath)
+    ind_sort_by = ind[sort_by]
+
+    with GoogleMapsScraper(debug=debug) as scraper:
+        for url in urls:
+            if place:
+                print(scraper.get_account(url))
+            else:
+                error = scraper.sort_by(url, ind_sort_by)
+
+                if error == 0:
+                    count = 0
+                    while count < n:
+                        print(colored(f'[Review {count}]', 'cyan'))
+                        reviews = scraper.get_reviews(count)
+                        if not reviews:
+                            break
+
+                        for r in reviews:
+                            row_data = list(r.values())
+                            if source:
+                                row_data.append(url.strip())
+                            writer.writerow(row_data)
+                        
+                        count += len(reviews)
+    return outpath
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Google Maps reviews scraper.')
     parser.add_argument('--N', type=int, default=100, help='Number of reviews to scrape')
@@ -38,37 +66,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     # store reviews in CSV file
-    writer = csv_writer(args.source, args.sort_by, args.o)
-
-    with GoogleMapsScraper(debug=args.debug) as scraper:
-        with open(args.i, 'r') as urls_file:
-            for url in urls_file:
-                if args.place:
-                    print(scraper.get_account(url))
-                else:
-                    error = scraper.sort_by(url, ind[args.sort_by])
-
-                    if error == 0:
-
-                        n = 0
-
-                        #if ind[args.sort_by] == 0:
-                        #    scraper.more_reviews()
-
-                        while n < args.N:
-
-                            # logging to std out
-                            print(colored('[Review ' + str(n) + ']', 'cyan'))
-
-                            reviews = scraper.get_reviews(n)
-                            if len(reviews) == 0:
-                                break
-
-                            for r in reviews:
-                                row_data = list(r.values())
-                                if args.source:
-                                    row_data.append(url[:-1])
-
-                                writer.writerow(row_data)
-
-                            n += len(reviews)
+    with open(args.i, 'r') as urls_file:
+        urls = [line.strip() for line in urls_file]
+    
+    scrape_reviews(urls, args.N, args.o, args.sort_by, args.place, args.debug, args.source)

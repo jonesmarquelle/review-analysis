@@ -158,6 +158,44 @@ def save_reviews(reviews: List[Dict[str, Any]], output_file: str) -> None:
         sys.exit(1)
 
 
+def preprocess_reviews(input_file, filter_file, output_file, case_sensitive=False, text_field='caption', preview=False, whitelist=False):
+    # Validate input files exist
+    if not os.path.exists(input_file):
+        print(f"Error: Input file '{input_file}' does not exist.")
+        sys.exit(1)
+    
+    if not os.path.exists(filter_file):
+        print(f"Error: Filter file '{filter_file}' does not exist.")
+        sys.exit(1)
+    
+    # Load filter terms
+    print(f"Loading filter terms from: {filter_file}")
+    filter_terms = load_filter_terms(filter_file)
+    print(f"Loaded {len(filter_terms)} filter terms")
+    
+    # Load reviews
+    print(f"Loading reviews from: {input_file}")
+    reviews = load_reviews(input_file)
+    print(f"Loaded {len(reviews)} reviews")
+    
+    # Filter reviews
+    mode = "whitelist" if whitelist else "blacklist"
+    print(f"Filtering reviews ({mode} mode)...")
+    print(f"Case sensitive: {case_sensitive}")
+    print(f"Text field: {text_field}")
+    
+    filtered_reviews = filter_reviews(reviews, filter_terms, case_sensitive, text_field, whitelist)
+    
+    # Save or preview results
+    if preview:
+        print(f"Preview mode - not saving to file")
+        print(f"Would save {len(filtered_reviews)} reviews to: {output_file}")
+    else:
+        save_reviews(filtered_reviews, output_file)
+
+    return output_file
+
+
 def main():
     """Main function to handle command line arguments and execute filtering."""
     parser = argparse.ArgumentParser(
@@ -193,39 +231,7 @@ Examples:
     
     args = parser.parse_args()
     
-    # Validate input files exist
-    if not os.path.exists(args.input_file):
-        print(f"Error: Input file '{args.input_file}' does not exist.")
-        sys.exit(1)
-    
-    if not os.path.exists(args.filter_file):
-        print(f"Error: Filter file '{args.filter_file}' does not exist.")
-        sys.exit(1)
-    
-    # Load filter terms
-    print(f"Loading filter terms from: {args.filter_file}")
-    filter_terms = load_filter_terms(args.filter_file)
-    print(f"Loaded {len(filter_terms)} filter terms")
-    
-    # Load reviews
-    print(f"Loading reviews from: {args.input_file}")
-    reviews = load_reviews(args.input_file)
-    print(f"Loaded {len(reviews)} reviews")
-    
-    # Filter reviews
-    mode = "whitelist" if args.whitelist else "blacklist"
-    print(f"\nFiltering reviews ({mode} mode)...")
-    print(f"Case sensitive: {args.case_sensitive}")
-    print(f"Text field: {args.text_field}")
-    
-    filtered_reviews = filter_reviews(reviews, filter_terms, args.case_sensitive, args.text_field, args.whitelist)
-    
-    # Save or preview results
-    if args.preview:
-        print(f"\nPreview mode - not saving to file")
-        print(f"Would save {len(filtered_reviews)} reviews to: {args.output_file}")
-    else:
-        save_reviews(filtered_reviews, args.output_file)
+    preprocess_reviews(args.input_file, args.filter_file, args.output_file, args.case_sensitive, args.text_field, args.preview, args.whitelist)
 
 
 if __name__ == "__main__":
