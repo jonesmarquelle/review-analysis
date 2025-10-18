@@ -8,7 +8,27 @@ function App() {
   const [loading, setLoading] = useState(false);
 
   const handleAnalyze = async () => {
-    // I will implement the API call here in the next step
+    setLoading(true);
+    setAnalysis('');
+    try {
+      const response = await fetch('http://localhost:8000/analyze', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          url: url,
+          reviews_count: parseInt(reviewsCount),
+        }),
+      });
+      const data = await response.json();
+      setAnalysis(data.analysis);
+    } catch (error) {
+      console.error('Error analyzing reviews:', error);
+      setAnalysis('Failed to analyze reviews. Please check the console for details.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
