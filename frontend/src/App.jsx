@@ -1,35 +1,53 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from 'react';
+import './App.css';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [url, setUrl] = useState('');
+  const [reviewsCount, setReviewsCount] = useState(50);
+  const [analysis, setAnalysis] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const handleAnalyze = async () => {
+    // I will implement the API call here in the next step
+  };
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <div className="App">
+      <header className="App-header">
+        <h1>Google Maps Reviews Analyzer</h1>
+        <div className="input-container">
+          <input
+            type="text"
+            value={url}
+            onChange={(e) => setUrl(e.target.value)}
+            placeholder="Enter Google Maps URL"
+            className="url-input"
+          />
+          <div className="slider-container">
+            <label htmlFor="reviews-count">Number of reviews: {reviewsCount}</label>
+            <input
+              type="range"
+              id="reviews-count"
+              min="0"
+              max="100"
+              value={reviewsCount}
+              onChange={(e) => setReviewsCount(e.target.value)}
+              className="slider"
+            />
+          </div>
+          <button onClick={handleAnalyze} disabled={loading} className="analyze-button">
+            {loading ? 'Analyzing...' : 'Analyze Reviews'}
+          </button>
+        </div>
+        {analysis && (
+          <div className="analysis-container">
+            <h2>Analysis Results</h2>
+            <pre>{analysis}</pre>
+          </div>
+        )}
+      </header>
+    </div>
+  );
 }
 
-export default App
+export default App;
