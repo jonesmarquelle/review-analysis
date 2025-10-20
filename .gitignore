@@ -107,7 +107,6 @@ venv.bak/
 test/
 *.csv
 .DS_Store
-*.html
 *.txt
 !requirements.txt
 !urls.txt

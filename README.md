@@ -1,70 +1,102 @@
-# Google Maps Scraper
+# Google Maps Reviews Analyzer
 
-This project scrapes Google Maps reviews, preprocesses them, and analyzes them for common complaints using Gemini AI. It also provides a simple desktop-like frontend to interact with the scripts.
+A web application that allows you to analyze Google Maps reviews by either entering a URL directly or selecting a location on an interactive map.
 
-## Project Structure
+## Features
 
-- `backend/`: Contains all the Python scripts for scraping, preprocessing, and analysis, as well as the FastAPI backend.
-- `frontend/`: Contains the React frontend application.
+- **Dual Input Methods**: Enter a Google Maps URL directly or select a location on an interactive map
+- **Interactive Map**: Search for places and click to select locations
+- **Review Analysis**: Scrapes and analyzes reviews to identify common complaints
+- **Business Information**: Displays comprehensive business details
 
-## Setup and Installation
+## Setup Instructions
 
-### Backend
+### 1. Google Maps API Key Setup
 
-1.  Navigate to the `backend` directory:
-    ```sh
-    cd backend
-    ```
-2.  Install the required Python packages:
-    ```sh
-    pip install -r requirements.txt
-    ```
-3.  Set up your Gemini API key by creating a `.env` file in the `backend` directory with the following content:
-    ```
-    GEMINI_API_KEY=your_api_key
-    ```
+To use the map functionality, you need to set up a Google Maps API key:
 
-### Frontend
+1. Go to the [Google Cloud Console](https://console.cloud.google.com/)
+2. Create a new project or select an existing one
+3. Enable the following APIs:
+   - **Maps JavaScript API**
+   - **Places API**
+   - **Geocoding API**
+4. Create credentials (API Key)
+5. Restrict the API key to your domain for security
 
-1.  Navigate to the `frontend` directory:
-    ```sh
-    cd frontend
-    ```
-2.  Install the required npm packages:
-    ```sh
-    npm install
-    ```
+### 2. Configure the API Key
 
-## Running the Application
+1. Copy the example environment file:
+   ```bash
+   cd frontend
+   cp .env.example .env
+   ```
 
-### Backend
+2. Open `/frontend/.env` and replace `YOUR_GOOGLE_MAPS_API_KEY_HERE` with your actual API key:
+   ```env
+   VITE_GOOGLE_MAPS_API_KEY=your-actual-api-key-here
+   ```
 
-1.  Navigate to the `backend` directory:
-    ```sh
-    cd backend
-    ```
-2.  Run the FastAPI server:
-    ```sh
-    uvicorn main:app --reload
-    ```
-The backend server will be running at `http://localhost:8000`.
+   **Note**: The `.env` file is already included in `.gitignore` to keep your API key secure.
 
-### Frontend
+### 3. Install Dependencies
 
-1.  Navigate to the `frontend` directory:
-    ```sh
-    cd frontend
-    ```
-2.  Run the React application:
-    ```sh
-    npm run dev
-    ```
-The frontend application will be running at `http://localhost:5173`.
+```bash
+# Frontend dependencies
+cd frontend
+npm install
+
+# Backend dependencies
+cd ../backend
+pip install -r requirements.txt
+```
+
+### 4. Run the Application
+
+```bash
+# Start the backend server
+cd backend
+python main.py
+
+# Start the frontend development server (in a new terminal)
+cd frontend
+npm run dev
+```
 
 ## Usage
 
-1.  Open your browser and navigate to the frontend application (usually `http://localhost:5173`).
-2.  Enter a Google Maps URL in the text box.
-3.  Use the slider to select the number of reviews to pull.
-4.  Click the "Analyze Reviews" button to start the analysis.
-5.  The analysis results will be displayed on the page.
+1. **URL Method**: 
+   - Click "Enter URL" tab
+   - Paste a Google Maps business URL
+   - Click "Analyze Reviews"
+
+2. **Map Method**:
+   - Click "Select on Map" tab
+   - Search for a business or click anywhere on the map
+   - Select the number of reviews to analyze
+   - Click "Analyze Reviews"
+
+## API Endpoints
+
+- `POST /analyze` - Analyze reviews for a given URL
+  - Body: `{"url": "string", "reviews_count": number}`
+  - Returns: Analysis results and business information
+
+## Technologies Used
+
+- **Frontend**: React, Tailwind CSS, @vis.gl/react-google-maps
+- **Backend**: FastAPI, Python
+- **Maps**: Google Maps JavaScript API, Places API
+
+## Environment Variables
+
+The application uses environment variables for configuration:
+
+- `VITE_GOOGLE_MAPS_API_KEY`: Your Google Maps API key (required for map functionality)
+
+## Security Notes
+
+- Always restrict your Google Maps API key to specific domains
+- The `.env` file is automatically ignored by git to keep your API key secure
+- Consider implementing rate limiting for production use
+- The scraper respects Google's terms of service and implements delays between requests
