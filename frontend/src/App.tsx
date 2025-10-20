@@ -5,7 +5,7 @@ import {createRoot} from 'react-dom/client';
 import ReactMarkdown from 'react-markdown';
 import {APIProvider, Map, MapMouseEvent} from '@vis.gl/react-google-maps';
 
-import {GOOGLE_MAPS_API_KEY} from './config/maps';
+import {GOOGLE_MAPS_API_KEY, ANALYSIS_API_ENDPOINT} from './config/maps';
 
 import BusinessInfoCard from './components/BusinessInfoCard';
 import getPlaceDetails from './components/PlaceSeach';
@@ -34,7 +34,7 @@ function App() {
     }
     
     try {
-      const response = await fetch('http://localhost:8000/analyze', {
+      const response = await fetch(ANALYSIS_API_ENDPOINT, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

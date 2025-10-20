@@ -16,3 +16,5 @@ if (!GOOGLE_MAPS_API_KEY || GOOGLE_MAPS_API_KEY === 'YOUR_GOOGLE_MAPS_API_KEY_HE
 // - Maps JavaScript API
 // - Places API
 // - Geocoding API
+
+export const ANALYSIS_API_ENDPOINT = import.meta.env.VITE_ANALYSIS_API_ENDPOINT;
