@@ -114,6 +114,10 @@ test/
 chromedriver*
 
 # data
-backend/input/
-backend/output/
-backend/data/
+input/
+output/
+data/
+
+node_modules/
+.env.local
+.next/

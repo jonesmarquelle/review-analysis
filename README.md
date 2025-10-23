@@ -1,102 +1,87 @@
-# Google Maps Reviews Analyzer
+<p align="center">
+  <a href="https://nextjs-fastapi-starter.vercel.app/">
+    <img src="https://assets.vercel.com/image/upload/v1588805858/repositories/vercel/logo.png" height="96">
+    <h3 align="center">Next.js FastAPI Starter</h3>
+  </a>
+</p>
 
-A web application that allows you to analyze Google Maps reviews by either entering a URL directly or selecting a location on an interactive map.
+<p align="center">Simple Next.j 14 boilerplate that uses <a href="https://fastapi.tiangolo.com/">FastAPI</a> as the API backend.</p>
 
-## Features
+<br/>
 
-- **Dual Input Methods**: Enter a Google Maps URL directly or select a location on an interactive map
-- **Interactive Map**: Search for places and click to select locations
-- **Review Analysis**: Scrapes and analyzes reviews to identify common complaints
-- **Business Information**: Displays comprehensive business details
+## Introduction
 
-## Setup Instructions
+This is a hybrid Next.js 14 + Python template. One great use case of this is to write Next.js apps that use Python AI libraries on the backend, while still having the benefits of Next.js Route Handlers and Server Side Rendering.
 
-### 1. Google Maps API Key Setup
+## How It Works
 
-To use the map functionality, you need to set up a Google Maps API key:
+The Python/FastAPI server is mapped into to Next.js app under `/api/`.
 
-1. Go to the [Google Cloud Console](https://console.cloud.google.com/)
-2. Create a new project or select an existing one
-3. Enable the following APIs:
-   - **Maps JavaScript API**
-   - **Places API**
-   - **Geocoding API**
-4. Create credentials (API Key)
-5. Restrict the API key to your domain for security
+This is implemented using [`next.config.js` rewrites](https://github.com/digitros/nextjs-fastapi/blob/main/next.config.js) to map any request to `/api/py/:path*` to the FastAPI API, which is hosted in the `/api` folder.
 
-### 2. Configure the API Key
+Also, the app/api routes are available on the same domain, so you can use NextJs Route Handlers and make requests to `/api/...`.
 
-1. Copy the example environment file:
-   ```bash
-   cd frontend
-   cp .env.example .env
-   ```
+On localhost, the rewrite will be made to the `127.0.0.1:8000` port, which is where the FastAPI server is running.
 
-2. Open `/frontend/.env` and replace `YOUR_GOOGLE_MAPS_API_KEY_HERE` with your actual API key:
-   ```env
-   VITE_GOOGLE_MAPS_API_KEY=your-actual-api-key-here
-   ```
+In production, the FastAPI server is hosted as [Python serverless functions](https://vercel.com/docs/concepts/functions/serverless-functions/runtimes/python) on Vercel.
 
-   **Note**: The `.env` file is already included in `.gitignore` to keep your API key secure.
+## Demo
 
-### 3. Install Dependencies
+https://nextjs-fastapi-starter.vercel.app/
+
+## Deploy Your Own
+
+You can clone & deploy it to Vercel with one click:
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fdigitros%2Fnextjs-fastapi%2Ftree%2Fmain)
+
+## Developing Locally
+
+You can clone & create this repo with the following command
 
 ```bash
-# Frontend dependencies
-cd frontend
+npx create-next-app nextjs-fastapi --example "https://github.com/digitros/nextjs-fastapi"
+```
+
+## Getting Started
+
+First, create and activate a virtual environment:
+
+```bash
+python3 -m venv venv
+source venv/bin/activate
+```
+
+Then, install the dependencies:
+
+```bash
 npm install
-
-# Backend dependencies
-cd ../backend
-pip install -r requirements.txt
+# or
+yarn
+# or
+pnpm install
 ```
 
-### 4. Run the Application
+Then, run the development server(python dependencies will be installed automatically here):
 
 ```bash
-# Start the backend server
-cd backend
-python main.py
-
-# Start the frontend development server (in a new terminal)
-cd frontend
 npm run dev
+# or
+yarn dev
+# or
+pnpm dev
 ```
 
-## Usage
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-1. **URL Method**: 
-   - Click "Enter URL" tab
-   - Paste a Google Maps business URL
-   - Click "Analyze Reviews"
+The FastApi server will be running on [http://127.0.0.1:8000](http://127.0.0.1:8000) – feel free to change the port in `package.json` (you'll also need to update it in `next.config.js`).
 
-2. **Map Method**:
-   - Click "Select on Map" tab
-   - Search for a business or click anywhere on the map
-   - Select the number of reviews to analyze
-   - Click "Analyze Reviews"
+## Learn More
 
-## API Endpoints
+To learn more about Next.js, take a look at the following resources:
 
-- `POST /analyze` - Analyze reviews for a given URL
-  - Body: `{"url": "string", "reviews_count": number}`
-  - Returns: Analysis results and business information
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- [FastAPI Documentation](https://fastapi.tiangolo.com/) - learn about FastAPI features and API.
 
-## Technologies Used
-
-- **Frontend**: React, Tailwind CSS, @vis.gl/react-google-maps
-- **Backend**: FastAPI, Python
-- **Maps**: Google Maps JavaScript API, Places API
-
-## Environment Variables
-
-The application uses environment variables for configuration:
-
-- `VITE_GOOGLE_MAPS_API_KEY`: Your Google Maps API key (required for map functionality)
-
-## Security Notes
-
-- Always restrict your Google Maps API key to specific domains
-- The `.env` file is automatically ignored by git to keep your API key secure
-- Consider implementing rate limiting for production use
-- The scraper respects Google's terms of service and implements delays between requests
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
