@@ -38,15 +38,19 @@ def analyze(request: AnalysisRequest):
     os.makedirs("data", exist_ok=True)
 
     # 1. Scrape reviews
+    print(f"Scraping reviews for {urls} with {reviews_count} reviews")
     scraped_csv = scrape_reviews(urls, reviews_count, outpath=reviews_csv, source=True)
 
     # 2. Convert CSV to JSON
+    print(f"Converting CSV to JSON")
     converted_json = csv_to_json(scraped_csv, reviews_json)
 
     # 3. Preprocess reviews
+    print(f"Preprocessing reviews")
     preprocessed_json = preprocess_reviews(converted_json, sample_filter_terms, filtered_reviews_json)
 
     # 4. Analyze complaints
+    print(f"Analyzing complaints")
     analysis_result = analyze_complaints(preprocessed_json, complaints_analysis_md)
 
     return {"analysis": analysis_result}

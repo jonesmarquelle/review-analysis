@@ -165,7 +165,7 @@ def preprocess_reviews(input_file, filter_file, output_file, case_sensitive=Fals
         sys.exit(1)
     
     if not os.path.exists(filter_file):
-        print(f"Error: Filter file '{filter_file}' does not exist. Skipping filter.")
+        print(f"Filter file '{filter_file}' does not exist. Skipping filter.")
         return input_file
     
     # Load filter terms

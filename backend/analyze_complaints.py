@@ -11,6 +11,7 @@ from google.genai.types import HttpOptions
 import argparse
 import sys
 import dotenv
+from config import get_settings
 
 dotenv.load_dotenv()
 
@@ -78,19 +79,12 @@ Please provide a comprehensive analysis of common complaints and issues.
     return prompt
 
 
-def analyze_with_gemini(prompt, api_key=None):
+def analyze_with_gemini(prompt):
     """Send the prompt to Gemini for analysis."""
     try:
         # Initialize Gemini client
-        if api_key:
-            client = genai.Client(api_key=api_key, http_options=HttpOptions(api_version="v1"))
-        else:
-            # Get api key from environment variable
-            api_key = os.getenv('GEMINI_API_KEY')
-            if not api_key:
-                print("Error: GEMINI_API_KEY environment variable is not set")
-                sys.exit(1)
-            client = genai.Client(api_key=api_key, http_options=HttpOptions(api_version="v1"))
+        api_key = get_settings().GEMINI_API_KEY
+        client = genai.Client(api_key=api_key, http_options=HttpOptions(api_version="v1"))
         
         print("Sending analysis request to Gemini...")
         
@@ -116,7 +110,7 @@ def save_analysis(analysis_text, output_file):
         print(f"Error saving analysis: {e}")
 
 
-def analyze_complaints(input_file, output_file, api_key=None, min_rating=1):
+def analyze_complaints(input_file, output_file, min_rating=1):
     # Load reviews
     reviews = load_reviews(input_file)
     
@@ -136,7 +130,7 @@ def analyze_complaints(input_file, output_file, api_key=None, min_rating=1):
     prompt = create_analysis_prompt(reviews_with_text)
     
     # Analyze with Gemini
-    analysis = analyze_with_gemini(prompt, api_key)
+    analysis = analyze_with_gemini(prompt)
     
     if analysis:
         print("GEMINI ANALYSIS RESULTS")
@@ -156,14 +150,12 @@ def main():
                        help='Path to the JSON file containing reviews (default: data/reviews.json)')
     parser.add_argument('--output', '-o', type=str, default='complaints_analysis.txt',
                        help='Output file for the analysis results (default: complaints_analysis.txt)')
-    parser.add_argument('--api-key', type=str, default=None,
-                       help='Gemini API key (if not set in environment)')
     parser.add_argument('--min-rating', type=int, default=1,
                        help='Minimum rating to include in analysis (default: 1, includes all reviews)')
     
     args = parser.parse_args()
     
-    analyze_complaints(args.input, args.output, args.api_key, args.min_rating)
+    analyze_complaints(args.input, args.output, args.min_rating)
 
 
 if __name__ == '__main__':

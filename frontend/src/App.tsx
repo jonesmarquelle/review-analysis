@@ -1,6 +1,4 @@
 import { useState } from 'react';
-import React from 'react';
-import {createRoot} from 'react-dom/client';
 
 import ReactMarkdown from 'react-markdown';
 import {APIProvider, Map, MapMouseEvent} from '@vis.gl/react-google-maps';

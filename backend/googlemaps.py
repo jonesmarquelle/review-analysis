@@ -368,6 +368,9 @@ class GoogleMapsScraper:
 
         if not self.debug:
             options.add_argument("--headless")
+            options.add_argument("--no-sandbox")
+            options.add_argument("--disable-dev-shm-usage")
+            options.add_argument("--disable-gpu")
         else:
             options.add_argument("--window-size=1366,768")
 
